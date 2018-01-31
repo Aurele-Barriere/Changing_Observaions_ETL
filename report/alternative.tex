@@ -1,0 +1,44 @@
+We now introduce another semantics to interpret formulas of \ctlskd.
+In this semantics, we aim to replace histories and observation records with information sets (intuitively, the set of states the agent believe it is possible to be in). 
+
+\subsection{Information sets}
+In this semantics, history formulas are interpreted on $s$ a state of the model, $I$ an information set (set of model states) and $o$ the current observation.
+Path formulas are interpreted on $\pi$ an infinite sequence of states of the model starting in the current one (we don't remember the past states), $I$ the information set and $o$ the current observation.
+
+%Later in this section, we will prove an equivalence between the two semantics for \ctlskd. If the first semantics corresponds to the intuitive semantics that we want to model-check, this new semantics offer some advantages. First, the past history is forgotten, for history and path formulas. We show that the information set captures enough information about the past. Secondly, because there exists a finite number of information sets, this new semantics is easier to model-check.
+
+\paragraph{Preliminary definitions}
+If $\pi=\pi_0\pi_1\dots$ is an infinite sequence of states, we write $\pi_{n\dots}$ the infinite sequence $\pi_n\pi_{n+1}\dots$.
+
+We define two functions to update information sets. $\UD$ updates the set when a player goes through a change of observation and $\UT$ updates the set when the player moves to a new state. 
+Finally, we define a function $I_I$ to get the initial information set from an initial state and an initial observation.
+
+\begin{tabular}{r c c c l}
+$\UD(I,s,o)$& = &$\{x\in I$ & $~|~$ & $x\eqstate{o}s\}$\\
+$\UT(I,s,o)$& = &$\{x\in S$ & $~|~$ & $\exists t\in I, t\rightarrow x ~\text{and}~ x\eqstate{o}s\}$\\
+$I_I(s_I,o_I)$& = &$\{s\in S$ & $~|~$ & $s\eqstate{o_I}s_I\}$\\
+\end{tabular}
+
+When we are in state $s$ with information set $I$ and the observation changes to $o$, the new information set is $\UD(I,s,o)$.
+When we move to a new state $s$ with information set $I$ and observation $o$, the new information set is $\UT(I,s,o)$
+
+For a path $\pi$ and $n\in\mathbb{N}$, we write $\UT^n(I,\pi,o)$ the successive temporal updates from $\pi_0$ to $\pi_n$.
+
+$\UT^0(I,\pi,o)=I$\quad and\quad$\UT^{n+1}(I,\pi,o)=\UT(\UT^n(I,\pi,o),\pi_{n+1},o)$
+
+\subsection{Information Set Semantics}~
+
+\begin{tabular}{l c l}
+  $M,s,I,o\models p $&$ \iff $&$ p\in V(s)$\\
+  $M,s,I,o\models\neg\varphi $&$ \iff $&$ M,s,I,o\not\models\varphi$\\
+  $M,s,I,o\models \varphi_1\wedge\varphi_2 $&$ \iff $&$ (M,s,I,o\models\varphi_1~\text{and}~M,s,I,o\models\varphi_2)$\\
+  $M,s,I,o\models\A\psi $&$ \iff $&$ \forall\pi$ such that $\pi_0=s$, we have $M,\pi,I,o\models\psi$\\
+  $M,s,I,o\models\K\varphi $&$ \iff $&$ \forall s'\in I$, we have $M,s',I,o\models\varphi$\\
+  $M,s,I,o'\models\D{o}\varphi $&$ \iff $&$ M,s,\UD(I,s,o),o\models\varphi$\\
+  $M,\pi,I,o\models\varphi $&$ \iff $&$ M,\pi_0,I,o\models\varphi$\\
+  $M,\pi,I,o\models\neg\psi $&$ \iff $&$ M,\pi,I,o\not\models\psi$\\
+  $M,\pi,I,o\models\psi_1\wedge\psi_2 $&$ \iff $&$ (M,\pi,I,o\models\psi_1~\text{and}~M,\pi,I,o\models\psi_2)$\\
+  $M,\pi,I,o\models\X\psi $&$ \iff $&$ M,\pi_{1\dots},\UT(I,\pi_1,o),o\models\psi$\\
+  $M,\pi,I,o\models\psi_1\U\psi_2 $&$ \iff $&$ \exists n\geq 0$, $\forall m\leq n, M,\pi_{m\dots},\UT^m(I,\pi,o),o\models\psi_1$ and\\
+   & & $M,\pi_{n\dots},\UT^n(I,\pi,o),o\models\psi_2$
+\end{tabular}

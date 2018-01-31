@@ -1,0 +1,192 @@
+\begin{frame}{Temporal Logics}
+
+  \begin{block}{Evolving Systems}
+    Typically modelled wih \textbf{Kripke Structures} $M=(S,I,T,V)$.\\
+
+    \begin{tikzpicture}[%
+        every node/.style={circle,minimum size=4pt,minimum height=4pt, inner sep=0pt},
+        shorten >=2pt,
+        node distance=1.3cm, >=latex
+      ]
+      \node [] (0) [circle] {$~_{\color{red}~ p}~s_{1}$};
+      \node [] (1) [circle, right=of 0] {$s_{2}~_{\color{red}\neg p}$}; 
+      \path [draw] (0) edge[->, bend right]  node {} (1)
+      (0) edge[->, loop above]  node {} (0)
+      (1) edge[->, bend right]  node {} (0);
+    \end{tikzpicture}\hfill
+    \begin{tabular}{c l l}
+      $S$ & States &\\
+      $I$ & Initial states & $\subseteq S$\\
+      $T$ & Transitions & $\subseteq S\times S$\\
+      $V$ & Valuation & $S\rightarrow 2^{AP}$
+    \end{tabular}
+  \end{block}
+  \vfill
+  \begin{block}{Temporal Logics}
+    \begin{tabular}{l c r}
+    Syntax & defines & $\varphi$\\
+    Semantics & defines & $M\models\varphi$
+    \end{tabular}
+  \end{block}
+  \vfill
+  \begin{block}{Model-Checking}
+    Given Kripke Structure $M$, and formula $\varphi$, does $M\models\varphi$?
+  \end{block}
+  
+\end{frame}
+
+
+\begin{frame}{A Temporal Logic: \ctls}
+
+  \begin{block}{Syntax}
+    \begin{tabular}{l l}
+      State formulas & $\varphi := p ~|~ \neg \varphi ~|~ \varphi\wedge\varphi ~|~ \A\psi$\\
+      Path formulas & $\psi := \varphi ~|~ \neg\psi ~|~ \psi\wedge\psi ~|~ \X\psi ~|~ \psi\U\psi$\\
+    \end{tabular}
+    
+      $\A:$ for all paths\hfill
+      $\X:$ next\hfill
+      $\U:$ until\hfill
+  \end{block}
+  \vfill
+  \begin{block}{Semantics}
+    \begin{tabular}{l c l}
+      $M,s \models p $&$ \iff $&$ p\in V(s)$\\
+      $M,s \models \A\psi  $&$ \iff $&$ \forall\pi$ that starts in $s$, we have $M,\pi\models\psi$\\
+      $M,\pi\models\varphi $&$ \iff $&$ M,\mathit{last}(\pi)\models\varphi$\\
+      $M,\pi\models\X\psi $&$ \iff $&$  M,\pi_{> 0}\models\psi$\\
+      $M,\pi\models\psi_1\U\psi_2 $&$ \iff $&$ \exists m\geq 0$ such that $\forall k\in[0,m[, M,\pi_{\geq k}\models\psi_1$\\
+          & & and $M,\pi_{\geq m}\models\psi_2$\\
+          \hline
+      $M\models\varphi$&$ \iff $&$\forall s\in I, \quad M,s\models\varphi$
+\end{tabular}
+  \end{block}
+  
+\end{frame}
+
+
+\begin{frame}{Model Checking}
+
+  \begin{block}{Exemple}
+    \begin{center}
+     \begin{tikzpicture}[%
+        every node/.style={circle,minimum size=4pt,minimum height=4pt, inner sep=0pt},
+        shorten >=2pt,
+        node distance=0.6cm, >=latex
+      ]
+      \node [] (0) [circle] {$s_{1}$};
+      \node [] (1) [circle, below right=of 0] {$s_{2}$};
+      \node [] (2) [circle, below left=of 0] {$s_{3}$};
+      \node [] (3) [circle, below right=of 2] {$s_{4}~_{\color{red}p}$};
+      \node [] (4) [circle, above=of 0] {};
+      \node [] (5) [rectangle, right=of 1,xshift=1cm] {$\varphi=\A\X\X p$};      
+      \path [draw] (0) edge[->]  node {} (1)
+      (1) edge[->]  node {} (3)
+      (0) edge[->]  node {} (2)
+      (2) edge[->]  node {} (3)
+      (4) edge[->]  node {} (0);
+     \end{tikzpicture}
+    \end{center}
+     For every possible path starting in $s_1$, $p$ is true after two steps.
+  \end{block}
+  \vfill
+  \begin{exampleblock}{Model Checking of \ctls\ is decidable}
+    Complexity PSPACE.
+  \end{exampleblock}
+  
+\end{frame}
+
+
+\begin{frame}{Epistemic Logics}
+
+  \begin{block}{Multi-agent systems and Imperfect Information}
+    Agents each have an observation (equivalence relation on states).
+    \vspace{-0.4cm}
+    \begin{center}
+    \begin{tikzpicture}[%
+        every node/.style={circle,minimum size=4pt,minimum height=4pt, inner sep=0pt},
+        shorten >=2pt,
+        node distance=0.6cm, >=latex
+      ]
+      \node [] (0) [circle, fill=blue!65] {$\color{white}s_{1}~_{\hphantom{p}}$};
+      \node [] (1) [circle, below right=of 0, fill=red!65] {$\color{white}s_{2}~_{\color{yellow}p}$};
+      \node [] (2) [circle, below left=of 0, fill=red!65] {$\color{white}s_{3}~_{\color{yellow}p}$};
+      \path [draw] (0) edge[->]  node {} (1)
+      (0) edge[->, loop above]  node {} (0)
+      (0) edge[->]  node {} (2);
+    \end{tikzpicture}
+    \quad\quad\quad
+    \begin{tikzpicture}[%
+        every node/.style={circle,minimum size=4pt,minimum height=4pt, inner sep=0pt},
+        shorten >=2pt,
+        node distance=0.6cm, >=latex
+      ]
+      \node [] (0) [circle, fill=blue!65] {$\color{white}s_{1}~_{\hphantom{p}}$};
+      \node [] (1) [circle, below right=of 0, fill=blue!65] {$\color{white}s_{2}~_{\color{yellow}p}$};
+      \node [] (2) [circle, below left=of 0, fill=red!65] {$\color{white}s_{3}~_{\color{yellow}p}$};
+      \path [draw] (0) edge[->]  node {} (1)
+      (0) edge[->, loop above]  node {} (0)
+      (0) edge[->]  node {} (2);
+    \end{tikzpicture}
+    \end{center}
+    \vspace{-0.4cm}    
+  \end{block}
+  \vfill
+  \begin{block}{Knowledge operator}
+    \begin{tabular}{r l}
+      $\K_a p$ : & Agent $a$ knows that $p$ holds.\\
+      $\K_a\K_b p$ : & Agent $a$ knows that agent $b$ knows $p$.
+    \end{tabular}
+  \end{block}
+  \vfill
+  \begin{exampleblock}{Epistemic Temporal Logics}
+    System goes through $(s_1,s_2)$.\\
+    \begin{tabular}{l l}
+    Possible histories for & agent 1: $(s_1,s_2)$ and $(s_1,s_3)$.\\
+                           & agent 2: $(s_1,s_2)$ and $(s_1,s_1)$.
+    \end{tabular}\\
+    Only the first agent knows that $p$ holds.
+  \end{exampleblock}
+  
+\end{frame}
+
+
+\begin{frame}{Strategy Logic with Imperfect Information}
+
+  \begin{block}{A logic for strategies in multi-agent systems}
+    $\left<\left< x\right>\right>^o~(a,x)~\varphi$~:\quad
+    There exists a strategy $x$ with observation $o$, such that if agent $a$ uses $x$, $\varphi$ holds.
+  \end{block}
+  \vfill
+  \begin{alertblock}{Changes of observation}
+    $\left<\left< x\right>\right>^o\left<\left< y \right>\right>^{o'}~(a,x)~\X~(a,y)~\varphi$
+  \end{alertblock}
+  \vfill
+  \begin{exampleblock}{Towards an epistemic extension of SLii}
+    How do changes of observations and epistemic operators interact?
+  \end{exampleblock}
+    
+\end{frame}
+
+
+\begin{frame}{\ctlskd}
+
+  \begin{block}{An Epistemic Temporal Logic with Changes of Observation}
+    \begin{itemize}
+    \item Branching-time Temporal Operators $\X,\U,\A$.
+    \item Knowledge Operator $\K$.
+    \item Dedicated operator for change of observation $\D{o}$.
+    \item Synchronous Perfect-Recall Semantics.
+    \end{itemize}
+  \end{block}
+  \vfill
+  \begin{exampleblock}{Objectives}
+    \begin{itemize}
+    \item Define \ctlskd\ for the single-agent setting.
+    \item Solve the model-checking problem.
+    \item Extend logic and model-checking to the multi-agent setting.
+    \end{itemize}
+  \end{exampleblock}
+  
+\end{frame}
+

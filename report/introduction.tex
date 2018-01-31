@@ -1,0 +1,16 @@
+Epistemic Logics are well known to be a required formalism to describe and reason about knowledge in distributed systems. Distributed algorithms (also called \textit{protocols}) involve agents without complete knowledge of the state of the system. Therefore, ``Any logic of protocols must include as part of it a logic of knowledge'', as said by Ladner and Reif in~\cite{DBLP:conf/tark/LadnerR86}.
+Such systems have been found to be useful for in many areas, including Game Theory and Artificial Intelligence.
+A popular extension of Epistemic Logics is to combine them with Temporal Logics. Reasoning about the evolution of agents' knowledge inside a system becomes possible. For each of these logics, model-checking (deciding if a formula is true in a given model) is an important problem, as it allows to confront the model of a system to its specification.
+
+In these settings, agents are usually given a fixed observation for the whole evolution. Observations describe an agent's point of view, to model imperfect information.
+In this paper, to deal with dynamic changes of observations during the evolution in a system with imperfect information, we introduce a new logic, \ctlskd. To the best of our knowledge, this is the first time that such changes are studied. This logic includes branching-time temporal operators, epistemic operators, and a new one, $\D{o}$, to represent changes of observation. For instance, the formula $\D{o}\K\A\X p$ states that after changing to an observation $o$, the agent knows that, on the next step, the proposition $p$ holds.
+
+
+This logic could be useful for any system where agents can change their observational power of the system. For instance, in a scenario where there exists different ``security levels'' where different levels have access to different information. With our logic, it becomes possible to express statements such as ``For an agent with initial observation $o_1$, there exists a point in time where, if the agent changes his observation to $o_2$, he knows whether or not some proposition holds'' ($\D{o_1}F(\D{o_2}(\K p\vee\K\neg p))$).
+Another main motivation to define such a logic is the work that has been done on Strategy Logic with Imperfect Information~\cite{DBLP:conf/lics/BerthonMMRV17}, an extension of Strategy Logic~\cite{DBLP:journals/iandc/ChatterjeeHP10}. In this logic, agents can change observation when changing strategies.
+Before investigating it in the full framework of Strategy Logic, the natural first step was to study the interactions of observation changes, knowledge and time in a simpler setting, without the strategic aspects.
+
+In Section~\ref{sec:ctlskd}, we first define the logic \ctlskd. To begin, we only define it for single-agent synchronous perfect recall settings.
+Then, in Section~\ref{sec:alternative}, we introduce an alternative, finitary semantics for the same formulas, that we later prove to be equivalent to the first one, and easier to model-check.
+In Section~\ref{sec:mc}, we describe an algorithm to model-check a formula of \ctlskd.
+Finally, we extend the logic for multi-agent settings in Section~\ref{sec:multi}.

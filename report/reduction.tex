@@ -1,0 +1,107 @@
+\subsection{Reduction Theorem}
+We now have different semantics, that share the same syntax. We will now prove that these two semantics are equivalent.
+
+To do so, we first notice that, from a history $h$ and an observation record $r$, we can get corresponding current state, information set and current observation. Similarly, from an infinite sequence $\pi$, a time $n$ and a record, we can get corresponding sequence $\pi'$ that starts at the current state, information set and current observation.
+
+We accordingly define two partial functions, $\FV$ and $\FP$ as follows:
+
+\paragraph{$\FV(h,r)=(s,I,o)$} where
+
+\begin{tabular}{r l}
+\textsc{i)} & \quad$s=\mathit{last}(h)$\\
+\textsc{ii)} & \quad$o=\mathit{last}(r_{\leq |h|-1})$\\
+\textsc{iii)} & \quad$I=f(h,r)$
+\end{tabular}
+
+\paragraph{$\FP(\pi,n,r)=(\pi',I,o)$} where
+
+\begin{tabular}{r l}
+\textsc{iv)} & \quad$\pi'=\pi_{n\dots}$\\
+\textsc{v)} & \quad$o=\mathit{last}(r_{\leq n})$\\
+\textsc{vi)} & \quad$I=f((\pi_0,\dots,\pi_n),r)$
+\end{tabular}
+
+$\FV$ and $\FP$ are partial functions, because
+$\FV(h,r)$ is defined only if $r=r_{\leq |h|-1}$
+and $\FP(\pi,n,r)$ is defined only if $r=r_{\leq n}$.
+
+\paragraph{$f$} is defined inductively as follows: ($s$ is a state, $h$ a history)
+
+\begin{tabular}{r c l}
+$f(s,r)$&$=$&$I_I(s,o_I)~\text{if $r_0$ is empty}$\\
+$f(s,r)$&$=$&$\UD(\UD(\dots\UD(I_I(s,o_I),s,o_1),s,o_2)\dots,s,o_m)~\text{if $r_0=[o_1,o_2,\dots,o_m]$}$\\
+$f(h.s,r)$&$=$&$\UT(f(h,r),s,\mathit{last}(r_{\leq |h|-1}))~\text{if $r_{|h|}$ is empty}$\\
+$f(h.s,r)$&$=$&$\UD(\dots\UD(\UT(f(h,r),s,\mathit{last}(r_{\leq |h|-1})),s,o_1)\dots,s,o_m)~\text{if $r_{|h|}=[o_1,\dots,o_m]$}$
+\end{tabular}
+
+\subsubsection{Lemmas}~
+
+\textbf{Information Set Lemma} If $f(h,r)=I$, then\\
+$I=\{s\in S~|~\exists h',h'\eqh{r}h~\text{and}~\mathit{last}(h')=s\}.$
+
+\textbf{Proof:} This is proved inductively.
+\begin{itemize}
+\item Let $s\in S$ and $r$ a record. If $r_0$ is empty, then $\{s'\in S~|~\exists h',h'\eqh{r}s~\text{and}~\mathit{last}(h')=s'\}=\{s'\in S~|~s'\eqstate{o_I}s\}=I_I(s,o_I)$. This is the definition of $f(s,r)$.
+\item If $r_0=[o_1\dots o_m]$, then $\{s'\in S~|~\exists h',h'\eqh{r}s~\text{and}~\mathit{last}(h')=s'\}=\{s'\in S~|~s'\eqstate{o_i}s,\forall o_i\in r_0\cup\{o_I\}\}$. This is the definition of $f(s,r)$.
+\item Let $h$ be a history and $r$ a record. Let $o_r=\mathit{last}(r_{\leq |h|-1})$. If $r_{|h|}$ is empty\\
+$\{s'\in S~|~\exists h',h'\eqh{r}h.s~\text{and}~\mathit{last}(h')=s'\}$\\
+$=\{s'~|~\exists h', h'\eqh{r}h, \mathit{last}(h')\rightarrow s' ~\text{and}~s'\eqstate{o_r}s\}$\\
+$=\{s'~|~\exists t\in f(h,r), t\rightarrow s'~\text{and}~s'\eqstate{o_r}s\}$ by induction hypothesis\\
+$=\UT(f(h,r),s,o_r)$.
+\item Let $o_r=\mathit{last}(r_{\leq |h|-1})$. If $r_{|h|}=[o_1\dots o_m]$, then\\
+$\{s'\in S~|~\exists h',h'\eqh{r}h.s~\text{and}~\mathit{last}(h')=s'\}$\\
+$=\{s'~|~\exists h', h'\eqh{r}h, \mathit{last}(h')\rightarrow s' ~\text{and}~s'\eqstate{o}s\forall o\in [o_1\dots o_m]\cup\{o_r\}\}$\\
+$=\{s'~|~\exists t\in f(h,r), t\rightarrow s'~\text{and}~s'\eqstate{o}s\forall o\in [o_1\dots o_m]\cup\{o_r\}\}$ by induction hypothesis\\
+$=\UD(\dots\UD(\UT(f(h,r),s,o_r),s,o_1)\dots,s,o_m)$.\qed
+\end{itemize}
+
+We now present useful results about the functions $\FV$ and $\FP$. The proofs of the following lemmas can be found in appendix, Section~\ref{subsec:lemmaproof}.
+
+\textbf{Lemma 1}
+Let $h,h'$ and $r$ such that $h\eqh{r}h'$. Let $(s,I,o)=\FV(h,r)$ and $(s',I',o')=\FV(h',r)$. We have $I=I'$ and $o=o'$.
+
+\textbf{Lemma 2}
+Let $(s,I,o)=\FV(h,r)$.\\ Then, $\forall\pi$ such that $\pi_0=s$, $\FP(h.\pi_{1\dots},|h|-1,r)=(\pi,I,o)$.
+
+\textbf{Lemma 3}
+Let $(s,I,o)=\FV(h,r)$. Then, $\FV(h,r[(o',|h|-1)])=(s,\UD(I,s,o'),o')$.
+
+\textbf{Lemma 4}
+Let $(\pi',I,o)=\FP(\pi,n,r)$. Then, $\FV(\pi_0\dots\pi_n,r)=(\pi'_0,I,o)$.
+
+\textbf{Lemma 5}
+Let $(\pi',I,o)=\FP(\pi,n,r)$. Then, $\FP(\pi,n+1,r)=(\pi'_{1\dots},\UT(I,\pi'_1,o),o)$.
+
+\textbf{Lemma 6}
+Let $(\pi',I,o)=\FP(\pi,n,r)$.\\ Then, $\forall k\geq 0, \FP(\pi,n+k,r)=(\pi'_{k\dots},\UT^k(I,\pi',o),o)$.
+
+\subsubsection{Reduction Theorem}
+$\forall\phi$ formula of \ctlskd,\\
+if $\phi=\varphi$ is a history formula, $\forall h,r,s,I,o$ such that $\FV(h,r)=(s,I,o)$,\\ $M,h,r\models\varphi\iff M,s,I,o\models\varphi$,\\
+if $\phi=\psi$ is a path formula, $\forall \pi,n,r,\pi',I,o$ such that $\FP(\pi,n,r)=(\pi',I,o)$,\\ $M,\pi,n,r\models\psi\iff M,\pi',I,o\models\psi$.
+
+\textbf{Proof} By induction on $\phi$.
+Let $h,r,s,I,o$ such that $\FV(h,r)=(s,I,o)$.
+For each case, we prove \textbf{1:} if $M,h,r\models\varphi$ then $M,s,I,o\models\varphi$,
+and \textbf{2:} if $M,s,I,o\models\varphi$ then $M,h,r\models\varphi$,
+\begin{itemize}
+\item\underline{$p$~\textbf{1: and 2:}} We have $p\in V(\mathit{last}(h))\iff p\in V(s)$, because $\FV(h,r)=(s,I,o)$. Thus, $M,h,r\models p\iff M,s,I,o\models p$.
+\item\underline{$\neg\varphi$~\textbf{1: and 2:}} We have $M,h,r\not\models\varphi\iff M,s,I,o\not\models\varphi$ by induction hypothesis.
+\item\underline{$\varphi_1\wedge\varphi_2$~\textbf{1 and 2:}} We have $M,h,r\models\varphi_1~\text{and}~M,h,r\models\varphi_2\iff M,s,I,o\models\varphi_1~\text{and}~M,s,I,o\models\varphi_2$ by induction hypothesis.
+\item\underline{$\A\psi$~\textbf{1:}} We have $\forall\pi'$ extending $h$, $M,\pi',|h|-1,r\models\psi$. Let $\pi$ such that $\pi_0=s$. Let us prove that $M,\pi,I,o\models\psi$.
+We have $\FP(h.\pi_{1\dots},|h|-1,r)=(\pi,I,o)$, because $\FV(h,r)=(s,I,o)$ (\textbf{Lemma 2}). Then by induction, because $h.\pi_{1\dots}$ extends $h$ and $ M,h.\pi_{1\dots},|h|-1,r\models\psi$, we have $M,\pi,I,o\models\psi$.
+\item\underline{$\A\psi$~\textbf{2:}} Assume $\forall\pi'$ such that $\pi'_0=s$, $M,\pi',I,o\models\psi$. Let $\pi$ an infinite sequence of states. Let us prove that $M,h.\pi,|h|-1,r\models\psi$. By induction, it suffices to prove that $M,s.\pi,I,o\models\psi$, because $\FP(h.\pi,|h|-1,r)=(s.\pi,I,o)$ (\textbf{Lemma 2}). $s.\pi$ is a run $\pi'$ such that $\pi'_0=s$, and thus $M,h,r\models\A\psi$.
+\item\underline{$\K\varphi$~\textbf{1:}} Assume that $\forall h_1\eqh{r}h, M,h_1,r\models\varphi$. Let $s'\in I$. Let us prove that $M,s',I,o\models\varphi$. Using the \textbf{Information Set Lemma}, there exists some $h_1\eqh{r}h$ with $\mathit{last}(h_1)=s'$. We then have $\FV(h_1,r)=(s',I,o)$ (\textbf{Lemma 1}). As $M,h_1,r\models\varphi$, we conclude by induction that $M,s',I,o\models\varphi$ and thus $M,s,I,o\models\K\varphi$.
+\item\underline{$\K\varphi$~\textbf{2:}} Assume that $\forall s'\in I, M,s',I,o\models\varphi$. Let $h'$ such that $h'\eqh{r}h$. Let $s'=\mathit{last}(h')$. We have that $\FV(h',r)=(s',I,o)$ (\textbf{Lemma 1}). Because $s'\in I$ (\textbf{Information Set Lemma}), by induction we conclude $M,h',r\models\varphi$, and then $M,h,r\models\K\phi$.
+\item\underline{$\D{o'}\varphi$~\textbf{1: and 2:}} Using \textbf{Lemma 3}, we have $\FV(h,r[(o',|h|-1)])=(s,\UD(I,s,o'),o')$.
+Then, by induction, $M,h,r[(o',|h|-1)]\models\varphi\iff M,s,\UD(I,s,o'),o'\models\varphi$.
+\end{itemize}
+Let $\pi,n,r,\pi',I,o$ such that $\FP(\pi,n,r)=(\pi',I,o)$.
+\begin{itemize}
+\item\underline{$\varphi$} With \textbf{Lemma 4}, we have $\FV(\pi_0\dots\pi_n,r)=(\pi'_0,I,o)$ and thus by induction, $M,\pi_0\dots\pi_n,r\models\varphi\iff M,\pi'_0,I,o\models\varphi$. Finally, $M,\pi,n,r\models\varphi\iff M,\pi',I,o\models\varphi$.
+\item\underline{$\neg\psi$ and $\psi_1\wedge\psi_2$} Apply the induction hypothesis.
+\item\underline{$\X\psi$} With \textbf{Lemma 5}, we have $\FP(\pi,n+1,r_{\leq n})=(\pi'_{1\dots},\UT(\pi'_1,I,o),o)$ and thus by induction,
+$M,\pi,n,r\models\X\psi\iff M,\pi',I,o\models\X\psi$.
+\item\underline{$\psi_1\U\psi_2$} According to the definitions, it suffices to prove that $\forall k\geq 0$ and $\psi$ subformula of $\psi_1\U\psi_2$,
+$M,\pi'_k,\UT^k(I,\pi',o)\models\psi\iff M,\pi,n+k,r\models\psi$. This result comes from the induction hypothesis and \textbf{Lemma 6}.\qed
+\end{itemize}

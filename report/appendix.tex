@@ -1,0 +1,76 @@
+\subsection{Lemmas Proofs}
+\label{subsec:lemmaproof}
+
+\paragraph{Lemma 1}
+Let $h,h'$ and $r$ such that $h\eqh{r}h'$. Let $(s,I,o)=\FV(h,r)$ and $(s',I',o')=\FV(h',r)$. We have $I=I'$ and $o=o'$.\\
+\textbf{Proof:} $I=I'$ according to the \textbf{Information Set Lemma}. In \textsc{ii)}, we see that the observation only depends on the record and the length of the history. $|h|=|h'|$ because $h\eqh{r}h'$ and thus $o=o'$.\qed
+
+\paragraph{Lemma 2}
+Let $(s,I,o)=\FV(h,r)$. Then, $\forall\pi$ such that $\pi_0=s$, $\FP(h.\pi_{1\dots},|h|-1,r)=(\pi,I,o)$.\\
+\textbf{Proof:} \begin{itemize}
+\item\textsc{iv)} $(h.\pi_{1\dots})_n=s=\pi_0$ and $\forall i\in\mathbb{N}, (h.\pi_{1\dots})_{n+i}=\pi_i$.
+\item\textsc{v)} $o=\mathit{last}(r_{\leq |h|-1})$ because $(s,I,o)=\FV(h,r)$ (\textsc{ii}).
+\item\textsc{vi)} Because $(s,I,o)=\FV(h,r)$ (\textsc{iii}).\qed
+\end{itemize}
+
+\paragraph{Lemma 3}
+Let $(s,I,o)=\FV(h,r)$. Then, $\FV(h,r[(o',|h|-1)])=(s,\UD(I,s,o'),o')$.\\
+\textbf{Proof:} \begin{itemize}
+\item\textsc{i)} Because $(s,I,o)=\FV(h,r)$ (\textsc{I}).
+\item\textsc{ii)} Because $o'=\mathit{last}(r[(o',|h|-1)]_{\leq |h|-1})$.
+\item\textsc{iii)} We have $f(h,r[(o',|h|-1)])=\UD(f(h,r),\mathit{last(h)},o')$. Because $(s,I,o)=\FV(h,r)$ (\textsc{iii}), $f(h,r)=I$ and (\textsc{i}) $\mathit{last}(h)=s$. Thus, $f(h,r[(o',|h|-1)])=\UD(I,s,o')$.\qed
+\end{itemize}
+
+\paragraph{Lemma 4}
+Let $(\pi',I,o)=\FP(\pi,n,r)$. Then, $\FV(\pi_0\dots\pi_n,r)=(\pi'_0,I,o)$.\\
+\textbf{Proof:} \begin{itemize}
+\item\textsc{i)} $\pi'_0=\pi_n$ because $(\pi',I,o)=\FP(\pi,n,r)$ (\textsc{iv}).
+\item\textsc{ii)} Because $(\pi',I,o)=\FP(\pi,n,r)$ (\textsc{v}).
+\item\textsc{iii)} Because $(\pi',I,o)=\FP(\pi,n,r)$ (\textsc{vi}).\qed
+\end{itemize}
+
+\paragraph{Lemma 5}
+Let $(\pi',I,o)=\FP(\pi,n,r)$. Then, $\FP(\pi,n+1,r)=(\pi'_{1\dots},\UT(I,\pi'_1,o),o)$.\\
+\textbf{Proof:}
+First, $\FP(\pi,n+1,r)$ is defined because $r=r_{\leq n}=r_{\leq n+1}$.
+\begin{itemize}
+\item\textsc{iv)} Because $(\pi',I,o)=\FP(\pi,n,r)$ (\textsc{iv}), $\pi'=\pi_{n\dots}$ and thus $\pi'_{1\dots}=\pi_{n+1\dots}$.
+\item\textsc{v)} Because $(\pi',I,o)=\FP(\pi,n,r)$ (\textsc{v}).
+\item\textsc{vi)} We have $f((\pi_0\dots\pi_{n+1}),r_{\leq n})=\UT(f(\pi_0\dots\pi_n,r_{\leq n}),\pi_{n+1},o)$. Because $(\pi',I,o)=\FP(\pi,n,r)$ (\textsc{vi}), we have $f(\pi_0\dots\pi_n,r_{\leq n})=I$. Thus, $f((\pi_0\dots\pi_{n+1}),r_{\leq n})=\UT(I,\pi'_1,o)$.\qed
+\end{itemize}
+
+\paragraph{Lemma 6}
+Let $(\pi',I,o)=\FP(\pi,n,r)$. Then, $\forall k\geq 0, \FP(\pi,n+k,r)=(\pi'_{k\dots},\UT^k(I,\pi',o),o)$.\\
+\textbf{Proof} We proceed by induction.
+For $k=0$, we have to prove $(\pi'_{0\dots},I,o)=\FP(\pi,n+0,r)$, which is our hypothesis.
+For the inductive case:
+\begin{itemize}
+\item\textsc{iv)} $\pi_{n+k\dots}=\pi'_{k\dots}$ because $(\pi',I,o)=\FP(\pi,n,r)$ (\textsc{iv}).
+\item\textsc{v)}  Because $(\pi',I,o)=\FP(\pi,n,r)$ (\textsc{v}) and $r=r_{\leq n}$.
+\item\textsc{vi)} By induction hypothesis, $f(\pi_0\dots\pi_{n+k},r)=\UT^k(I,\pi',o)$. Then, $f(\pi_0\dots\pi_{n+k+1},r)=\UT(\UT^k(I,\pi',o),\pi_{n+k=1},o)=\UT^{k+1}(I,\pi',o)$ because $r_{n+k+1}$ is empty.\qed
+\end{itemize}
+
+\subsection{Reduction Theorem for multiple agents}
+\label{subsec:reduc}
+From $k\in\mathbb{N}$, a history $h$ and observation record $r_1,\dots,r_g$, we can get a corresponding \ktree\ and current observations. Similarly, from $k$, an infinite sequence $\pi$, a time $n$ and records, we can get corresponding sequence $\pi'$ that starts at the current state, \ktree\ and current observations.
+
+We can define two partial functions, $\FV$ and $\FP$, similarly to what was done for the single agent setting, Section~\ref{sec:alternative}:
+$\FV(k,h,r_1,\dots,r_g)=(t,o_1,\dots,o_g)$ and 
+$\FP(k,\pi,n,r_1,\dots,r_g)=(\pi',t,o_1,\dots,o_g)$.
+
+Finally, the Reduction Theorem can be adapted as follows:\\
+$\forall\phi$ formula of \ctlskd, $k=\mathit{depth}(\phi)$,\\
+if $\phi=\varphi$ is a history formula, $\forall h,r_1,\dots,r_g,t,o_1,\dots,o_g$ such that $\FV(k,h,r_1,\dots,r_g)=(t,o_1,\dots,o_g)$, \quad$M,k,h,r_1,\dots,r_g\models\varphi\iff M,t,o_1,\dots,o_g\models\varphi$,\\
+if $\phi=\psi$ is a path formula, $\forall \pi,n,r_1,\dots,r_g,\pi',t,o_1,\dots,o_g$ such that $\FP(k,\pi,n,r_1,\dots,r_g)=(\pi',t,o_1,\dots,o_g)$, \quad$M,\pi,n,r_1,\dots,r_g\models\psi\iff M,\pi',t,o_1,\dots,o_g\models\psi$.
+
+\subsection{Model-Checking a \ctlskd\ formula for multiple agents}
+\label{subsec:mc}
+The new extended model is the following: $\hat{M}=(S'_1\cup\dots\cup S'_{\mathit{depth}(\varphi)},T',V')$.
+\begin{itemize}
+\item $\forall i, S'_i=\mathcal{T}_i\times \mathcal{O}^g$: states are an $i$-tree and an observation for each player.
+\item $(t,o_1,\dots,o_g)~T'~(t',o_1,\dots,o_g)\iff \mathit{root}(t)~T~\mathit{root}(t')$ and $t'=\UTK{i}(t,\mathit{root}(t'),o_1,\dots,o_g)$
+\item $V'(t,o_1,\dots,o_g)=V(\mathit{root}(t))$. As the algorithm is executed, new atomic propositions will appear. We will update $V'$ accordingly.
+\end{itemize}
+The algorithm is a marking algorithm very similar to what has been described in Section~\ref{sec:mc}. For each $\K_i\varphi$ or $\D{o}_i\varphi$ formula where $\varphi$ is a \ctls\ formula, we first check $\varphi$ on each state. Then, we mark $(t,o_1,\dots,o_g)$ with $p_{\K_i\varphi}$ if $t\in\mathcal{T}_k$ with $k\geq\mathit{depth}(\K\varphi)$ and $\forall t'$ $i$-child of $t$, $(t',o_1,\dots,o_g)$ has been marked by $p_\varphi$. We mark it with $p_{\D{o'}_i\varphi}$ if $(t,o_1,\dots,o_{i-1},o',\dots,o_g)$ has been marked with $p_\varphi$.
+
+The number of \ktrees\ has been studied in~\cite{DBLP:conf/fsttcs/MeydenS99}. Our model-checking algorithm for multiple agents has non-elementary complexity.

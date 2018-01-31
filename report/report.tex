@@ -1,0 +1,112 @@
+\documentclass{llncs2e/llncs}
+
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{pgf,tikz}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{wrapfig}
+\usetikzlibrary{positioning}
+
+\begin{document}
+\setcounter{page}{0}
+\pagestyle{headings}
+\title{Defining and Model-Checking an Epistemic Temporal Logic with Changes of Observations}
+\titlerunning{CTL$^{*}$K$\Delta$}
+\author{Aur\`ele Barri\`ere}
+\authorrunning{Aur\`ele Barri\`ere}
+\date{December 18, 2017}
+\institute{\'Ecole Normale Sup\'erieure de Rennes, France\\
+\email{aurele.barriere@ens-rennes.fr}\\
+}
+\maketitle
+\hrulefill
+\begin{center}
+  \textbf{Supervisors: }\\
+  Aniello Murano\\
+  Bastien Maubert\\
+  Sasha Rubin\\
+  ~\\
+  Universit\`a degli Studi di Napoli Federico II
+\end{center}
+\hrulefill
+\begin{center}
+  \textbf{September 11th, 2017 - December 11th, 2017}
+\end{center}
+\vfill
+\begin{abstract}  
+We define a logic for systems with imperfect information, CTL$^*$K$\Delta$. It inherits operators from temporal and epistemic logics, as well as a new one that allows agents to dynamically change their observation of the system. We first define it for single-agent settings with synchronous perfect recall. We define an equivalent semantics, that is used later for model-checking the logic, and proved to be equivalent. We give an algorithm for model-checking. Finally, we extend our logic to multi-agent settings.
+\keywords{Epistemic Temporal Logic, Model Checking, Changing Observations}
+\end{abstract}
+\vfill
+\newpage
+
+% macros
+\def\ctls{CTL$^{*}$}
+\def\ctlskd{CTL$^{*}$K$\Delta$}
+\def\ctlskdp{CTL$^{*}$K$\Delta\psi$}
+\def\ap{AP}
+\def\A{\mathit{A}}
+\def\E{\mathit{E}}
+\def\U{\mathit{U}}
+\def\R{\mathit{R}}
+\def\X{\mathit{X}}
+\def\K{\mathit{K}}
+\def\KP{\bar{\mathit{K}}}
+\def\D#1{\Delta^{#1}}
+\def\eq#1#2{\approx^{#2}_{#1}}
+\def\eqh#1{\approx_{#1}}
+\def\eqstate#1{\sim_{#1}}
+\def\todo#1{{\color{red}#1}}
+\def\iff{\ \mathit{iff}\ }
+\def\UD{U_{\Delta}}
+\def\UT{U_T}
+\def\UDK#1{U_{\Delta #1}}
+\def\UTK#1{U_{T #1}}
+\def\FV{\mathit{FH}}
+\def\FP{\mathit{FP}}
+\def\ktree{$k$-tree}
+\def\ktrees{$k$-trees}
+\def\qed{\hfill$\blacksquare$}
+
+\section{Introduction}
+\label{sec:intro}
+\input{introduction.tex}
+
+\subsubsection{Related Works}
+\input{related.tex}
+
+\section{\ctlskd}
+\label{sec:ctlskd}
+\input{ctlskd.tex}
+
+\section{Alternative Semantics}
+\label{sec:alternative}
+\input{alternative.tex}
+\input{reduction.tex}
+
+\section{Model-Checking \ctlskd}
+\label{sec:mc}
+\input{modelcheck.tex}
+
+\section{Multi-agent setting}
+\label{sec:multi}
+\input{multiagent.tex}
+
+\section{Conclusion and Future Works}
+\label{sec:conclusion}
+\input{conclusion.tex}
+
+\newpage
+\pagenumbering{Roman}
+%\nocite{*}
+\bibliographystyle{plain}
+\bibliography{../bib/slii.bib}
+
+\newpage
+\section{Appendix}
+\input{appendix.tex}
+
+\end{document}

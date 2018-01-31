@@ -1,0 +1,166 @@
+\section{Alternative Semantics}
+\begin{frame}{Information Sets}
+
+  \begin{block}{Information Sets}
+    The set of states that the agent believes the system might be in.
+  \end{block}
+  \vfill
+  \begin{block}{Updating information Sets}
+    \begin{tabular}{r c c c l}
+    $\UD(I,s,o)$& = &$\{x\in I$ & $~|~$ & $x\eqstate{o}s\}$\\
+    $\UT(I,s,o)$& = &$\{x\in S$ & $~|~$ & $\exists t\in I, t\rightarrow x ~\text{and}~ x\eqstate{o}s\}$\\
+    \end{tabular}
+    
+    $\UD(I,s,o)$ When changing to observation $o$ in state $s$ with Information set $I$.\\
+    $\UT(I,s,o)$ When going to state $s$ with observation $o$ and Information set $I$.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Defining Alternative Semantics}
+  \footnotesize
+  \begin{block}{Alternative Semantics}
+    \begin{tabular}{l c l}
+      $M,s,I,o\models p $&$ \iff $&$ p\in V(s)$\\
+      $M,s,I,o\models\neg\varphi $&$ \iff $&$ M,s,I,o\not\models\varphi$\\
+      $M,s,I,o\models \varphi_1\wedge\varphi_2 $&$ \iff $&$ (M,s,I,o\models\varphi_1~\text{and}~M,s,I,o\models\varphi_2)$\\
+      $M,s,I,o\models\A\psi $&$ \iff $&$ \forall\pi$ such that $\pi_0=s$, we have $M,\pi,I,o\models\psi$\\
+      \color{red!85!blue}$M,s,I,o\models\K\varphi $&$ \iff $&\color{red!85!blue}$ \forall s'\in I$, we have $M,s',I,o\models\varphi$\\
+      \color{red!85!blue}$M,s,I,o'\models\D{o}\varphi $&$ \iff $&\color{red!85!blue}$ M,s,\UD(I,s,o),o\models\varphi$\\
+      $M,\pi,I,o\models\varphi $&$ \iff $&$ M,\pi_0,I,o\models\varphi$\\
+      $M,\pi,I,o\models\neg\psi $&$ \iff $&$ M,\pi,I,o\not\models\psi$\\
+      $M,\pi,I,o\models\psi_1\wedge\psi_2 $&$ \iff $&$ (M,\pi,I,o\models\psi_1~\text{and}~M,\pi,I,o\models\psi_2)$\\
+      \color{red!85!blue}$M,\pi,I,o\models\X\psi $&$ \iff $&\color{red!85!blue}$ M,\pi_{1\dots},\UT(I,\pi_1,o),o\models\psi$\\
+      $M,\pi,I,o\models\psi_1\U\psi_2 $&$ \iff $&$ \exists n\geq 0$, $\forall m\leq n, M,\pi_{m\dots},\UT^m(I,\pi,o),o\models\psi_1$ and\\
+      & & $M,\pi_{n\dots},\UT^n(I,\pi,o),o\models\psi_2$
+    \end{tabular}
+  \end{block}
+  \vfill
+  \begin{block}{~}
+    \begin{center}
+    \begin{tabular}{l l | l l}
+      $s$ & Current state & $o$ & Current Observation\\
+      $I$ & Information set & $\pi$ & Future states, starting in the current one\\
+    \end{tabular}
+    \end{center}
+  \end{block}
+\end{frame}
+  
+\begin{frame}{Reduction Theorem}
+
+  \begin{block}{Extracting Information Sets}
+    From a history and a record, we can get the corresponding Information set, current set and observation. $\FV(h,r)=(s,I,o)$.
+  \end{block}
+  \vfill
+  \begin{block}{Reduction Theorem}
+    $\forall\varphi$ history formula of \ctlskd, $\forall h,r,s,I,o$ such that\\ $\FV(h,r)=(s,I,o)$, \quad$M,h,r\models\varphi\iff M,s,I,o\models\varphi$.
+  \end{block}
+  \vfill
+  \begin{exampleblock}{Model-Checking \ctlskd\ can be reduced to Model-Checking the new Semantics}
+  \end{exampleblock}
+\end{frame}
+
+\section{Model-Checking}
+\begin{frame}{Model Checking the new Semantics}
+
+  \begin{block}{The Augmented Model}
+    $\hat{M}=(S',T',V')$, a Kripke Structure.
+    \begin{tabular}{l l}
+    $S'=S\times 2^{S}\times \mathcal{O}$ & states, information set and observation.\\
+    $(s,I,o)~T'~(s',I',o)$&$\iff s~T~s'$ and $I'=\UT(I,s',o)$ \\
+    $V'(s,I,o)=V(s)$ & Will be updated.
+    \end{tabular}
+  \end{block}
+  \begin{center}
+  \begin{tikzpicture}[%
+      every node/.style={circle,minimum size=4pt,minimum height=4pt, inner sep=0pt},
+      shorten >=2pt,
+      node distance=1.3cm, >=latex
+    ]
+    \node [] (0) [circle] {$s_1~_{\color{red}q}$};
+    \node [] (1) [circle, right=of 0] {$s_2$};
+    \node [] (2) [rectangle, right=of 1] {$o_1$: blind, $o_2$: perfect}; 
+    \path [draw] (0) edge[->, bend right]  node {} (1)
+    (0) edge[->, loop above]  node {} (0)
+    (1) edge[->, bend right]  node {} (0);
+  \end{tikzpicture}
+  \end{center}
+  \hrule
+  \begin{center}
+  \begin{tikzpicture}[%
+      every node/.style={circle,minimum size=4pt,minimum height=4pt, inner sep=0pt},
+      shorten >=2pt,
+      node distance=0.8cm, >=latex
+    ]
+    \node [] (0) [rectangle] {$s_1,\{s_1,s_2\},o_1$};
+    \node [] (1) [rectangle, right=of 0] {$s_2,\{s_1,s_2\},o_1$};
+    \node [] (2) [rectangle, below=of 0] {$s_1,\{s_1\},o_1$};
+    \node [] (3) [rectangle, below=of 1] {$s_2,\{s_2\},o_1$};
+    \node [] (4) [rectangle, right=of 1] {$s_1,\{s_1\},o_2$};
+    \node [] (5) [rectangle, right=of 4] {$s_2,\{s_2\},o_2$};
+    \path [draw] (0) edge[->, bend right]  node {} (1)
+    (0) edge[->, loop left]  node {} (0)
+    (1) edge[->, bend right]  node {} (0)
+    (4) edge[->, bend right]  node {} (5)
+    (4) edge[->, loop above]  node {} (4)
+    (5) edge[->, bend right]  node {} (4)
+    (2) edge[->]  node {} (0)
+    (2) edge[->, bend right]  node {} (1)
+    (3) edge[->, bend left]  node {} (2)
+    (1) edge[dashed, ->, bend left, color=red,right] node {$\D{o_2}$} (5)
+    (5) edge[dashed, ->, bend left, color=red,right] node {$\D{o_1}$} (3)
+    ;
+  \end{tikzpicture}
+  \end{center}
+\end{frame}
+
+
+\begin{frame}{Example}
+  $$\varphi=\D{o_2}(\K q\vee\neg q)$$
+  \vfill
+    \begin{tikzpicture}[%
+      every node/.style={circle,minimum size=4pt,minimum height=4pt, inner sep=0pt},
+      shorten >=2pt,
+      node distance=0.8cm, >=latex
+    ]
+    \node [] (0) [rectangle, align=center] {$s_1,\{s_1,s_2\},o_1$\\\color{red}{\onslide<1>{$q$}}{\onslide<4>{$\varphi$}}};
+    \node [] (1) [rectangle, right=of 0, align=center] {$s_2,\{s_1,s_2\},o_1$\\\color{red}{\onslide<3>{$\neg q$}}{\onslide<4>{$\varphi$}}};
+    \node [] (2) [rectangle, below=of 0, align=center] {$s_1,\{s_1\},o_1$\\\color{red}{\onslide<2-3>{$\K$}}{\onslide<1-3>{$q$}}{\onslide<4>{$\varphi$}}};
+    \node [] (3) [rectangle, below=of 1, align=center] {$s_2,\{s_2\},o_1$\\\color{red}{\onslide<3>{$\neg q$}}{\onslide<4>{$\varphi$}}};
+    \node [] (4) [rectangle, right=of 1, align=center] {$s_1,\{s_1\},o_2$\\\color{red}{\onslide<2-3>{$\K$}}{\onslide<1-3>{$q$}}{\onslide<4>{$\varphi$}}};
+    \node [] (5) [rectangle, right=of 4, align=center] {$s_2,\{s_2\},o_2$\\\color{red}{\onslide<3>{$\neg q$}}{\onslide<4>{$\varphi$}}};
+    \path [draw] (0) edge[->, bend right]  node {} (1)
+    (0) edge[->, loop above]  node {} (0)
+    (1) edge[->, bend right]  node {} (0)
+    (4) edge[->, bend right]  node {} (5)
+    (4) edge[->, loop above]  node {} (4)
+    (5) edge[->, bend right]  node {} (4)
+    (2) edge[->]  node {} (0)
+    (2) edge[->, bend right]  node {} (1)
+    (3) edge[->, bend left]  node {} (2)
+    ;
+  \end{tikzpicture}
+    \vfill
+    \textbf{Subformula:}
+    \onslide<4>{$\D{o_2}($}\onslide<2,4>{$\K$}\onslide<1-2,4>{$q$}\onslide<4>{$\vee$}\onslide<3-4>{$\neg q$}\onslide<4>{$)$}\\
+    
+\end{frame}
+
+
+\begin{frame}{Algorithm}
+  \footnotesize
+  \begin{block}{While there exists $\D{o}\varphi$ or $\K\varphi$ subformula ($\varphi$ \ctls\ formula)}
+    Mark the states where $\varphi$ holds using a \ctls\ model-checker, with a new atomic proposition $p_{\varphi}$.\\
+    If the subformula is $\K\varphi$, mark with a new atomic proposition $p_\phi$ every $(I,s,o)$ such that $\forall s'\in I, (I,s',o)$ has been marked with $p_{\varphi}$.\\
+    If the subformula is $\D{o}\varphi$, mark with a new atomic proposition $p_\phi$ every $(I,s,o')$ such that $(\UD(I,s,o),s,o)$ has been marked with $p_{\varphi}$.\\
+    Replace $\K\varphi$ or $\D{o}\varphi$ with $p_\phi$.
+  \end{block}
+  \vfill
+  \begin{exampleblock}{When there is no more $\K$ or $\D{o}$}
+    The final formula is a \ctls\ formula with new atomic propositions.
+    It can be model-checked with a \ctls\ model-checker.
+  \end{exampleblock}
+    
+
+\end{frame}
+
+

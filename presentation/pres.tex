@@ -1,0 +1,106 @@
+\documentclass[page number]{beamer}
+\usetheme[sectionpage=none,numbering=fraction,progressbar=foot]{metropolis}
+\usepackage{etex}
+\usepackage{graphicx, booktabs} % For tabulars
+\usepackage{pgf,tikz}
+\usepackage{ulem}
+\usetikzlibrary{arrows}
+\usetikzlibrary{positioning,shapes,fit}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{multicol}
+\usepackage{syntax}
+\usepackage{xcolor, color, colortbl}
+\usepackage{tikz-qtree}
+\usepackage{listings}
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{amsmath}
+
+\makeatletter
+\makeatother
+
+%\setcounter{tocdepth}{1} % remove subsection from table of contents
+
+% colors
+\definecolor{mDarkRed}{HTML}{6F1616}
+\definecolor{mDarkGreen}{HTML}{106235}
+\definecolor{mTeal}{HTML}{112233}
+\definecolor{mBlack}{HTML}{000000}
+\setbeamercolor{normal text}{fg=mTeal}
+\setbeamercolor{alerted text}{fg=mDarkRed}
+\setbeamercolor{example text}{fg=mDarkGreen}
+\setbeamercolor{title separator}{fg=purple,bg=mBlack}
+
+% macros
+\def\ctls{CTL$^{*}$}
+\def\ctlskd{CTL$^{*}$K$\Delta$}
+\def\ctlskdp{CTL$^{*}$K$\Delta\psi$}
+\def\ap{AP}
+\def\A{\mathit{A}}
+\def\E{\mathit{E}}
+\def\U{\mathit{U}}
+\def\R{\mathit{R}}
+\def\X{\mathit{X}}
+\def\K{\mathit{K}}
+\def\KP{\bar{\mathit{K}}}
+\def\D#1{\Delta^{#1}}
+\def\eq#1#2{\approx^{#2}_{#1}}
+\def\eqh#1{\approx_{#1}}
+\def\eqstate#1{\sim_{#1}}
+\def\todo#1{{\color{red}#1}}
+\def\iff{\ \mathit{iff}\ }
+\def\UD{U_{\Delta}}
+\def\UT{U_T}
+\def\UDK#1{U_{\Delta #1}}
+\def\UTK#1{U_{T #1}}
+\def\FV{\mathit{FH}}
+\def\FP{\mathit{FP}}
+\def\ktree{$k$-tree}
+\def\ktrees{$k$-trees}
+\def\outline{
+  \begin{frame}[plain,noframenumbering]
+    \frametitle{Outline}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+
+\begin{document}
+\title[\ctlskd]{Defining and Model-Checking an Epistemic Temporal Logic with Changes of Observations}
+
+\author[Aur\`ele Barri\`ere]{Aur\`ele Barri\`ere\hfill\textbf{Supervisors:}\begin{tabular}{c}
+    Aniello Murano\\
+    Bastien Maubert\\
+    Sasha Rubin\\
+  \end{tabular}}
+% add supervisors
+\date{\textit{ENS Rennes\hfill Universit\`a degli Studi di Napoli Federico II}
+  \vfill
+  \textbf{January 8, 2018}}
+
+\def\outline{
+  \begin{frame}[plain,noframenumbering]
+    \frametitle{Outline}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+\begin{frame}[plain,noframenumbering]
+  \vspace{-2cm}
+  \maketitle
+  \vspace{-4cm}
+\end{frame}
+
+\metroset{sectionpage=none}
+\section{Introduction}
+\input{intro.tex}
+\metroset{sectionpage=progressbar}
+\section{\ctlskd: Single Agent}
+\input{ctlskd.tex}
+\input{mc.tex}
+%\metroset{sectionpage=none}
+\section{Conclusion}
+\input{conclusion.tex}
+
+\end{document}

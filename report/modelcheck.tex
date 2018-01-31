@@ -1,0 +1,137 @@
+\subsubsection{Model-Checking problem} Given a model $M=(S,I_s,o_I,T,V,\eqstate{o_1},\dots,\eqstate{o_m})$ and a history formula $\varphi$, return \textbf{yes} if $M\models\varphi$, and \textbf{no} otherwise.
+Thanks to the reduction theorem, it suffices to show that, for each $s\in I_s$, $M,s,I_I(s,o_I),o_I\models\varphi$. The algorithm will check the formula according to the information set semantics.
+
+\subsubsection{Augmented Model}
+We define an augmented model in which the states are tuples $(s,I,o)$.
+Because there is a finite number of states, information sets and observations, this model is finite.
+According to the information set semantics, history formulas can be viewed on this model as state formulas.
+
+From $M=(S,I,o_I,T,V,\eqstate{o_1},\dots,\eqstate{o_m})$ we define the augmented model $\hat{M}=(S',T',V')$, a Kripke Structure.
+\begin{itemize}
+\item $S'=S\times 2^{S}\times \mathcal{O}$: states are state of the original model, an observation set and an observation. There is a finite number of such states.
+\item $(s,I,o)~T'~(s',I',o)\iff s~T~s'$ and $I'=\UT(I,s',o)$
+\item $V'(s,I,o)=V(s)$. As the algorithm is executed, new atomic propositions will appear. We will update $V'$ accordingly.
+\end{itemize}
+We write $M_o$ the Kripke Structure obtained by keeping only the states where the observation is $o$. The different $M_o$ are disjoint with regards to $T'$.
+
+\subsubsection{Model checking a state formula}
+On this model $\hat{M}$, we define the function \textsc{Check}\ctlskd\ to determine if a history formula is true in a given state (\textbf{Algorithm}~\ref{algo}).
+We assume that we can check if a \ctls\ state formula $\varphi$ is true in a state $s$ of the Kripke Structure $K$ with the function \textsc{Check}\ctls$(K,s,\varphi)$~\cite{DBLP:conf/popl/ClarkeES83}.
+
+\begin{algorithm}[h]
+  \caption{Model Checking \ctlskd}
+  \begin{algorithmic}[1]
+    \Function{\textsc{Check}\ctlskd}{$\hat{M},(s_c,I_c,o_c),\varphi$}
+    \If{There exists $\phi=\K\varphi_1$ or $\phi=\D{o'}\varphi_1$ a subformula of $\varphi$ such that $\varphi_1$ is a formula of \ctls}
+    \State Let $p_{\varphi_1}$ be a new Atomic Proposition
+    \For{$(s,I,o)\in S'$}
+    \If{\textsc{Check}\ctls$(M_{o},(s,I,o),\varphi_1)$}
+    \State $V'(s,I,o):=V'(s,I,o)\cup\{p_{\varphi_1}\}$
+    \EndIf
+    \EndFor
+    \State Let $p_{\phi}$ be a new Atomic Proposition
+    \If{$\phi=\K\varphi_1$}
+    \For{$(s,I,o)\in S'$}
+    \If{$p_{\varphi_1}\in V'(s',I,o)$ for each $s'\in I$}
+    \State $p_{\phi}\in V'(s,I,o)$
+    \EndIf
+    \EndFor
+    \EndIf
+    \If{$\phi=\D{o'}\varphi_1$}
+    \For{$(s,I,o)\in S'$}
+    \If{$p_{\varphi_1}\in V'(s,\UD(I,s,o'),o')$}
+    \State $V'(s,I,o):=V'(s,I,o)\cup\{p_{\phi}\}$
+    \EndIf
+    \EndFor
+    \EndIf
+    \State\Call{\textsc{Check}\ctlskd}{$\hat{M},(s_c,I_c,o_c),\varphi[\phi\leftarrow p_{\phi}]$}
+    \Else \State\Call{\textsc{Check}\ctls}{$(M_{o_c},(s_c,I_c,o_c),\varphi)$}
+    \EndIf
+    \EndFunction     
+  \end{algorithmic}
+  \label{algo}
+\end{algorithm}
+
+\subsubsection{Algorithm Correctness}
+To be convinced of the correctness of the algorithm, it suffices to prove the following properties:
+\begin{itemize}
+\item If $\varphi$ is a formula of \ctls, \textsc{Check}\ctls$(M_o,(s,I,o),\varphi)$ returns \textbf{true} $\iff$ $M,s,I,o\models\varphi$.
+\item For each formula $\K\varphi_1$ chosen by the algorithm, after the \texttt{for} loop, $p_{\phi}\in V'(s,I,o)\iff M,s,I,o\models\K\varphi_1$
+\item For each formula $\D{o'}\varphi_1$ chosen by the algorithm, after the \texttt{for} loop, $p_{\phi}\in V'(s,I,o)\iff M,s,I,o\models\D{o'}\varphi_1$
+\end{itemize}
+
+The first property comes from the fact that, once restricted to the \ctls\ operators, the semantics of \ctlskd\ is identical to \ctls.
+We thus have that \textsc{Check}\ctls$(M_o,(s,I,o),\varphi)$ returns \textbf{true} $\iff M_o,s,I,o\models\varphi$. Finally, $M_o,s,I,o\models\varphi$ is equivalent to $M,s,I,o\models\varphi$ because $\varphi$ is a formula of \ctls\ and the different $M_o$ are disjoints.
+
+For the second and third properties, we use the previous one to know that after the first \texttt{for} loop, $p_{\varphi_1}\in V'(s,I,o)\iff M,s,I,o\models\varphi_1$. Then, after the second loop, $p_{\phi}\in V'(s,I,o)\iff \forall s'\in I, p_{\varphi_1}\in V'(s',I,o)$, which is equivalent to $M,s,I,o\models\K\varphi_1$.
+Similarly for he third property, $p_{\phi}\in V'(s,I,o)\iff p_{\varphi_1}\in V'(s,\UD(I,s,o'),o')$ which is equivalent to $M,s,I,o\models\D{o'}\varphi_1$.
+
+Finally, every formula of \ctlskd\ is either a formula of \ctls\ or contains a formula $\K\varphi_1$ or $\D{o'}\varphi_1$ such that $\varphi_1$ is a formula of \ctls. Because every recursive call removes one operator $\K$ or $\D{o'}$ from the formula, the algorithm eventually finishes for every formula of \ctlskd.
+ We know that the model-checking of \ctls\ is in PSPACE~\cite{DBLP:conf/popl/ClarkeES83}. Because this function is called for each state of the augmented model, for each subformula $\K\varphi$ or $\D{o}\varphi$, the overall complexity of the model-checking algorithm for a single player is in EXPTIME.
+
+
+\subsubsection{Example}
+
+\begin{wrapfigure}{r}{2cm}
+  \centering
+    \begin{tikzpicture}[%
+        every node/.style={circle,minimum size=4pt,minimum height=4pt, inner sep=0pt},
+        shorten >=2pt,
+        node distance=1.3cm, >=latex
+      ]
+      \node [] (0) [circle] {$s_1$};
+      \node [] (1) [circle, right=of 0] {$s_2$}; 
+      \path [draw] (0) edge[->, bend right]  node {} (1)
+      (0) edge[->, loop above]  node {} (0)
+      (1) edge[->, bend right]  node {} (0);
+    \end{tikzpicture}
+    \caption{$M$}
+    \label{fig:m}
+\end{wrapfigure}
+
+Let $M=(S,I,o_I,T,V,\eqstate{o_1},\eqstate{o_2})$ where $S=I=\{s_1,s_2\}$, $\mathcal{O}=\{o_1,o_2\}$, $o_I=o_1$, $AP=\{q\}$, $o_1$ is the blind observation ($s_1\eqstate{o_1}s_2$) and $o_2$ is the perfect observation ($s\eqstate{o_2}s'\iff s=s')$. $V(s_1)=\{q\}$ and $V(s_2)=\emptyset$. The transitions $T$ are pictured on \textbf{Fig.}~\ref{fig:m}. The augmented model $\hat{M}$ is pictured \textbf{Fig.}~\ref{fig:hatm}. We only drew the reachable states (reachable with $T'$ or $\UD$).
+
+Consider that the formula to model-check is $\varphi=\D{o_2}(\K q\vee\D{o_1}\K\A\X q)$.
+Intuitively, it means that if the agent changes to the perfect observation, then either the agent knows that $p$ holds, or even after changing to the blind observation he knows that in every possible next step, $p$ holds.
+After running the algorithm, we get the following valuation:
+
+\begin{tabular}{l c l}
+$V'(s_1,\{s_1,s_2\},o_1)$ &=& $\{q,p_\varphi\}$\\
+$V'(s_2,\{s_1,s_2\},o_1)$ &=& $\{p_\varphi \}$\\
+$V'(s_1,\{s_1\},o_1)$ &=& $\{q,p_{(\K q)},p_{(\K q\vee\D{o_1}\K\A\X q)},p_\varphi\}$\\
+$V'(s_2,\{s_2\},o_1)$ &=& $\{p_{(\D{o_1}\K\A\X q)},p_{(\K q\vee\D{o_1}\K\A\X q)},p_\varphi\}$\\
+$V'(s_1,\{s_1\},o_2)$ &=& $\{q,p_{(\K q)},p_{(\K q\vee\D{o_1}\K\A\X q)},p_\varphi\}$\\
+$V'(s_2,\{s_2\},o_2)$ &=& $\{p_{(\D{o_1}\K\A\X q)},p_{(\K q\vee\D{o_1}\K\A\X q)},p_\varphi\}$\\
+\end{tabular}
+
+For instance, $q\in V'(s_1,\{s_1\},o_1)$ because $s\in V(s_1)$, $p_{(\K q)}\in V'(s_1,\{s_1\},o_1)$ because $\forall s'\in\{s_1\}, q\in V'(s',\{s_1\},o_1)$.
+$p_{(\K q\vee\D{o_1}\K\A\X q)}\in V'(s_1,\{s_1\},o_1)$ because $p_{(\K q)}\in V'(s_1,\{s_1\},o_1)$ and finally, $p_\varphi\in V'(s_1,\{s_1\},o_1)$ because $p_{(\K q\vee\D{o_1}\K\A\X q)}\in V'(s_1,\{s_1\},o_2)$.
+
+We see that $p_\varphi$ is true in every state, and therefore true in the initial states. We conclude, as expected, that $M\models\varphi$.
+
+\begin{figure}
+  \centering
+    \begin{tikzpicture}[%
+        every node/.style={circle,minimum size=4pt,minimum height=4pt, inner sep=0pt},
+        shorten >=2pt,
+        node distance=1.3cm, >=latex
+      ]
+      \node [] (0) [rectangle] {$s_1,\{s_1,s_2\},o_1$};
+      \node [] (1) [rectangle, right=of 0] {$s_2,\{s_1,s_2\},o_1$};
+      \node [] (2) [rectangle, below=of 0] {$s_1,\{s_1\},o_1$};
+      \node [] (3) [rectangle, below=of 1] {$s_2,\{s_2\},o_1$};
+      \node [] (4) [rectangle, right=of 1] {$s_1,\{s_1\},o_2$};
+      \node [] (5) [rectangle, right=of 4] {$s_2,\{s_2\},o_2$};
+      \path [draw] (0) edge[->, bend right]  node {} (1)
+      (0) edge[->, loop left]  node {} (0)
+      (1) edge[->, bend right]  node {} (0)
+      (4) edge[->, bend right]  node {} (5)
+      (4) edge[->, loop left]  node {} (4)
+      (5) edge[->, bend right]  node {} (4)
+      (2) edge[->]  node {} (0)
+      (2) edge[->, bend right]  node {} (1)
+      (3) edge[->, bend left]  node {} (2);
+    \end{tikzpicture}
+    \caption{$\hat{M}$, the augmented model}
+    \label{fig:hatm}
+\end{figure}

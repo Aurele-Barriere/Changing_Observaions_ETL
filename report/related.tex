@@ -1,0 +1,11 @@
+Works on epistemic logics are numerous. The first ones started to investigate logics of knowledge in a static setting~\cite{sato77}. Later, many works have studied combinations of epistemic and temporal logics. Such logics are said to be Epistemic Temporal Logics~\cite{Dima2009}.
+
+In~\cite{DBLP:conf/fsttcs/MeydenS99}, the logic LTLK is defined and model-checked. We use the same \ktree\ structure in Section~\ref{sec:multi} to represent the knowledge of multiple agents.
+
+Without our changes of observations, the combination of CTL with epistemic logics has been studied before~\cite{DBLP:conf/birthday/LomuscioP12}\cite{DBLP:conf/faabs/LomuscioLP02}.
+CTL$^*$, the extension of CTL, has also been studied with epistemic operators. CTL$^*$K has been investigated and model-checked in~\cite{DBLP:conf/atal/KongL17}\cite{DBLP:phd/hal/Maubert14}\cite{BOZZELLI201580}, in both memoryless and perfect recall settings.
+
+
+The possibility of dynamically changing observation has been introduced in Strategy Logic with Imperfect Information~\cite{DBLP:conf/lics/BerthonMMRV17}. In this logic, an operator $(a,x)$ allows to assign a strategy $x$ to a player $a$. Strategies are defined with the operator $\ll x\gg^o$, where $o$ is an observation, because strategies for imperfect information systems can only be defined with regards to some observation. Whenever a strategy is assigned to a player, this player will behave as if he sees the system with the observation that his strategy was defined with. In that sense, it is possible for a player to change his observation power if he changes his strategy to another one using a different observation. A natural extension to Strategy Logic with imperfect information being epistemic operators, we decided to study how such changes of observation would interact with the agents' knowledge, by defining a dedicated operator.
+
+

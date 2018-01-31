@@ -1,0 +1,79 @@
+\begin{frame}{Multi agent setting}
+  \begin{block}{New syntax}
+    \begin{tabular}{r l}
+    History Formula: & $\varphi := p ~|~ \neg \varphi ~|~ \varphi\wedge\varphi ~|~ \A\psi ~|~ \K_a\varphi ~|~ \D{o}_a\varphi$\\
+    Path Formula: & $\psi := \varphi ~|~ \neg\psi ~|~ \psi\wedge\psi ~|~ \X\psi ~|~ \psi\U\psi$
+    \end{tabular}
+    
+    $a$ agent.
+  \end{block}
+  \vfill
+  \begin{block}{\ktrees}
+    \begin{center}
+      \begin{tikzpicture}[%
+      every node/.style={circle,minimum size=4pt,minimum height=4pt, inner sep=0pt},
+      shorten >=2pt,
+      node distance=1.3cm, >=latex
+    ]
+        \node [] (0) [circle] {$s_1$};
+        \node [] (4) [circle, below left=of 0,xshift=-2cm] {,};
+    \node [] (1) [circle, left=of 4,xshift=1cm] {$\{~s_1$};
+    \node [] (2) [circle, right=of 4,xshift=-1cm] {$s_2~\}$};
+    \node [] (3) [circle, below right=of 0,xshift=2cm] {$\{\quad s_1\quad\}$};
+    \node [] (11) [circle, below left=of 1] {$\{s_1\}$};
+    \node [] (12) [circle, below=of 1] {$\{s_1\}$};11
+    \node [] (21) [circle, below=of 2] {$\{s_2\}$};
+    \node [] (22) [circle, below right=of 2] {$\{s_2\}$};    
+    \node [] (31) [circle, below left=of 3] {$\{s_1,s_2\}$};
+    \node [] (32) [circle, below right=of 3] {$\{s_1\}$};    
+
+    \path
+    (0) edge[->,above left]  node {\tiny 1} (4)
+    (0) edge[->,above right]  node {\tiny 2} (3)
+    (1) edge[->,above left] node {\tiny 1} (11)
+    (1) edge[->,right] node {\tiny 2} (12)
+    (2) edge[->,left] node {\tiny 1} (21)
+    (2) edge[->,above right] node {\tiny 2} (22)
+    (3) edge[->,above left] node {\tiny 1} (31)
+    (3) edge[->,above right] node {\tiny 2} (32)
+    ;
+      \end{tikzpicture}
+    \end{center}
+  \end{block}
+
+\end{frame}
+
+
+\begin{frame}{Summary}
+
+  \begin{exampleblock}{Definition of \ctlskd}
+    First one to study changes of observations with epistemic operators.
+  \end{exampleblock}
+  \vfill
+  \begin{exampleblock}{Definition of alternative semantics}
+    Easier to model-check.\\
+    Proved the equivalence between the two semantics.
+  \end{exampleblock}
+  \vfill
+  \begin{exampleblock}{Model-Checking}
+    Marking Algorithm.\\
+    EXPTIME for single-agent setting.
+  \end{exampleblock}
+  \vfill
+  \begin{exampleblock}{Multi-agent setting}
+    Nonelementary complexity for model-checking.
+  \end{exampleblock}
+   
+\end{frame}
+
+
+\begin{frame}{Future Works}
+
+  \begin{itemize}
+  \item Extend the logic. Allow $\D{o}$ in path formulas.
+  \item Axiomatization of \ctlskd.
+  \item Implementation of the Model-Checking Algorithm.
+  \item Epistemic Extension of Strategy Logic with Imperfect Information.
+  \end{itemize}
+  
+\end{frame}

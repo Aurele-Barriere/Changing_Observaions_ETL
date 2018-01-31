@@ -1,0 +1,84 @@
+\subsection{Syntax}
+
+We begin by introducing the syntax of our logic. It contains operators of branching-time logics, temporal logics and epistemic logics, as well as a new one to indicate changes of observations. At first, we will study the case where there is only one agent (and thus only one  knowledge operator).
+
+We consider $\mathcal{O}$ to be a set of \textit{observations}, that each represent a possible observational power of the agent. $\mathit{AP}$ is a set of atomic propositions.
+Formulas of \ctlskd\ can be \textit{history formulas} $\varphi$ or \textit{path formulas} $\psi$.
+
+$$\varphi := p ~|~ \neg \varphi ~|~ \varphi\wedge\varphi ~|~ \A\psi ~|~ \K\varphi ~|~ \D{o}\varphi$$
+$$\psi := \varphi ~|~ \neg\psi ~|~ \psi\wedge\psi ~|~ \X\psi ~|~ \psi\U\psi$$
+
+Where $p\in\mathit{AP}$ and $o\in\mathcal{O}$.
+The temporal operators $\X$ and $\U$ are meant to represent the typical \textit{next} and \textit{until} operators of temporal logics.
+$\A$ is a path quantifier, similar to those found in branching-time logics. Intuitively, $\A\psi$ should hold for a history if $\psi$ is true in every possible future.
+$\K$ is an epistemic operator. Intuitively, $\K\varphi$ should be true whenever the agent knows that $\varphi$ is true. We introduce a new one, $\D{o}$, to represent a change of observation.
+$\varphi$ is called a history formula, as we only need to know what happened in the past to decide if the formula is true. $\psi$ is called a path formula as it also requires the future evolution of the system.
+
+We can also define the temporal operator $\R$ (the \textit{release}), dual of $\U$. The path quantifier $\E$, dual of $\A$. The knowledge operator $\KP$ (\textit{possibility}), dual of $\K$. With negation and $\wedge$, we can also define the classical Boolean operators $\vee$ and $\rightarrow$.
+
+\subsection{Semantics}
+
+The models on which such formulas can be interpreted are classical Kripke Structure, with several equivalence relations between states (one for each observation).
+Let $\mathcal{O}=\{o_1,o_2,\dots,o_m\}$.
+A Kripke Structure with observations is a structure $M=(S,I_s,o_I,T,V,\eqstate{o_1},\dots,\eqstate{o_m})$ where
+
+\begin{tabular}{r l}
+$S$& is a set of states.\\
+$I_s\subseteq S$& is a set of initial states.\\
+$o_I$& is the initial observation.\\
+$T\subseteq S\times S$& is a transition relation between states.\\
+$V:S\rightarrow 2^{\mathit{AP}}$& is a valuation function.\\
+$\forall o_i, \eqstate{o_i}$& is an equivalence relation between states.
+\end{tabular}
+
+A \textit{run} or \textit{path} is an infinite sequence of states $\pi=\pi_0\pi_1\dots$. A \textit{history} is a finite sequence of states $h=h_1\dots h_n$.
+
+\subsubsection{Observation records}
+Given $\mathcal{O}$ a set of observations, we define \textit{observations records} to be ordered lists of pairs of observations and natural numbers.
+Intuitively, an observation record represents changes of observations.
+
+\textbf{Example:}  $r=[(o_1,0),(o_2,3),(o_3,3)]$ means that the player starts at time 0 with observation $o_1$. It keeps this observation, then at time 3, it first changes to $o_2$ and then to $o_3$. We use observation records in the semantics to remember the previous observations of the agent.
+
+We write $r[(o,n)]$ to append a new pair $(o,n)$ to the observation record $r$.
+We write $r_{\leq n}$ the record $r$ without the pairs $(o,m)$ where $m>n$.
+We write $r_n$ the record $r$ without the pairs $(o,m)$ where $m\neq n$. 
+We define a function $\mathit{O}(r,n)$ which gives a tuple of the observations at time $n$. $\mathit{O}(r,n)$ includes every observation of $r_n$, as well as the previous one.
+
+\textbf{Example:} Let $r=[(o_1,0),(o_2,3),(o_3,3)]$. $\mathit{O}(r,0)=(o_I,o_1), \mathit{O}(r,1)=\mathit{O}(r,2)=(o_1)$, $\mathit{O}(r,3)=(o_1,o_2,o_3)$ and $\mathit{O}(r,4)=(o_3)$.
+
+On a given model, with an observation record we can define an equivalence relation between histories (finite sequences of states), with regard to a record. Two histories are equivalent with regard to the record if the player can't distinguish them by using the observations in the record.\\
+$h\eqh{r}h'\quad\iff\quad \forall i< |h|, \forall o\in \mathit{O}(r,i), h(i)\eqstate{o} h'(i)~\textit{and}~|h|=|h'|.$
+
+\subsubsection{Record semantics}
+We first define the intuitive semantics of \ctlskd. History formulas need a history $h$ (finite sequence of previous states) and an observation record $r$ to be interpreted, to know which history might be considered possible for the agent.
+Path formulas are interpreted on a run $\pi$ (infinite sequence of states of the model), a point in time (natural number), and an observation record.
+
+\begin{tabular}{l c l}
+  $M,h,r \models p $&$ \iff $&$ p\in V(\mathit{last}(h))$\\
+  $M,h,r \models \neg\varphi $&$ \iff $&$ M,h,r\not\models\varphi$\\
+  $M,h,r \models \varphi_1\wedge\varphi_2 $&$ \iff $&$ (M,h,r\models\varphi_1~\text{and}~ M,h,r\models\varphi_2)$\\
+  $M,h,r \models \A\psi  $&$ \iff $&$ \forall\pi$ that extends $h$, we have $M,\pi,|h|-1,r\models\psi$\\
+  $M,h,r \models\K\varphi  $&$ \iff $&$ \forall h'$ such that $h'\eqh{r}h$, we have $M,h',r\models\varphi$\\
+  $M,h,r \models \D{o}\varphi $&$ \iff $&$ M,h,r[(o,|h|-1)]\models\varphi$\\
+  $M,\pi,n,r\models\varphi $&$ \iff $&$ M,(\pi_0\dots\pi_n),r\models\varphi$\\
+  $M,\pi,n,r\models\neg\psi $&$ \iff $&$ M,\pi,n,r\not\models\psi$\\
+  $M,\pi,n,r\models \psi_1\wedge\psi_2 $&$ \iff $&$ (M,\pi,r,n\models\psi_1~\text{and}~ M,\pi,r,n\models\psi_2)$\\
+  $M,\pi,n,r\models\X\psi $&$ \iff $&$  M,\pi,(n+1),r\models\psi$\\
+  $M,\pi,n,r\models \psi_1\U\psi_2 $&$ \iff $&$ \exists m\geq n$ such that $\forall k\in[n,m[, M,\pi,k,r\models\psi_1$\\
+   & & and $M,\pi,m,r\models\psi_2$
+\end{tabular}
+
+Finally, we say that $M=(S,I_s,o_I,T,V,\eqstate{o_1},\dots,\eqstate{o_m})$ models $\varphi$ (written $M\models\varphi$), if $\forall s\in I_s, M,s,[(o_I,0)]\models\varphi$. This definition corresponds to the model-checking problem that we solve in Section~\ref{sec:mc}.
+
+\subsubsection{A few validities of \ctlskd}~
+
+\begin{tabular}{l r}
+$\D{o}(\varphi_1\wedge\varphi_2)\quad\leftrightarrow\quad(\D{o}\varphi_1\wedge\D{o}\varphi_2)$ & (distributivity)\\
+$\D{o}\neg\varphi\quad\leftrightarrow\quad\neg\D{o}\varphi$ & (self-duality)\\
+$\D{o}\A\X\D{o}\K\varphi\quad\leftrightarrow\quad\D{o}\A\X\K\varphi$ & (redundant change of observation)\\
+$\D{o}\K\varphi\quad\rightarrow\quad\D{o}\K\D{o}\K\varphi$ & (positive introspection)
+\end{tabular}
+
+\subsubsection{Our Model-Checking approach}
+Once \ctlskd\ is defined, our goal is to solve the model-checking problem. Because of perfect-recall semantics, it may seem that we have to remember the complete history and records when evaluating a formula. However, our main idea is that we can extract some information from the history that is sufficient for the evaluation of the formula. Intuitively, to evaluate a history formula, it is enough to know the current state, the current observation and the set of states that the agent believes the system might be in (this set is later called the \textit{Information Set}). This new structure to represent the knowledge is more succinct than remembering entire histories and records, as there is a finite number of information sets.
+We start by defining a new semantics for the same formulas. This semantics uses information sets. Then, we will present an algorithm to model-check a formula according to these new semantics.

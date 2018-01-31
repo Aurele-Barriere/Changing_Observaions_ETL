@@ -1,0 +1,73 @@
+We now define \ctlskd\ for multiple agents.
+We consider $\mathcal{A}$ to be the (finite) set of agents. We write $g$ the number of agents.
+In this logic, changes of observation are public, meaning that every player knows the changes of observations of all players.
+This allows agents to reason about another agent's knowledge.
+
+\subsection{Syntax and intuitive Semantics}
+\subsubsection{Syntax}
+The syntax has to be modified. There is now one knowledge operator and one change operator for each agent $a\in\mathcal{A}$: $\K_a$ and $\D{o}_a$.
+
+$$\varphi := p ~|~ \neg \varphi ~|~ \varphi\wedge\varphi ~|~ \A\psi ~|~ \K_a\varphi ~|~ \D{o}_a\varphi$$
+$$\psi := \varphi ~|~ \neg\psi ~|~ \psi\wedge\psi ~|~ \X\psi ~|~ \psi\U\psi$$
+
+Where $p\in AP, a\in\mathcal{A}$ and $o\in\mathcal{O}$.
+
+\subsubsection{Record Semantics}
+We now need one observation record for each player to interpret a formula. For most operators, the semantics remains unchanged. We make the following modifications:
+
+\begin{tabular}{l c l}
+$M,h,r_1,\dots,r_g \models\K_a\varphi $&$ \iff $&$ \forall h'$ s.t. $h'\eqh{r_a}h$, we have $M,h',r_1,\dots,r_g\models\varphi$\\
+$M,h,r_1,\dots,r_g \models \D{o}_a\varphi$&$ \iff $&$ M,h,r_1,\dots,r_a[(o,|h|-1)],\dots,r_g\models\varphi$
+\end{tabular}
+
+\subsection{\ktrees\ semantics}
+\subsubsection{\ktrees} We want to define another semantics, similarly to the Information set semantics defined in Section~\ref{sec:alternative}. However, Information sets no longer contain sufficient information to represent the epistemic situation of a multi-agent system. Indeed, agents need not only to remember what states they believe the system might be in, but also the states that other agents believe the system might be in, in case of formulas with nested knowledge operators. For a formula $\phi$ of \ctlskd\ with multiple agent, we write $\mathit{depth}(\phi)$ the maximal number of nested knowledge operators in $\phi$.
+For a finite number of nested operators $k$, this information can conveniently be stored in \ktrees, as defined in~\cite{DBLP:conf/fsttcs/MeydenS99}.
+The set $\mathcal{T}_k$ of \ktrees\ over the set of states $S$ for $g$ agents is defined inductively as follows:
+
+\begin{tabular}{r l c}
+$\mathcal{T}_0$&=&$\{(s,\emptyset,\dots,\emptyset)~|~(g+1)\text{-tuple, with }s\in S\}$\\
+$\mathcal{T}_{k+1}$&=&$\{(s,U_1,\dots,U_g)~|~s\in S~\text{ and }\forall i,U_i\subseteq\mathcal{T}_k\}$
+\end{tabular}
+
+Intuitively, if $(s,U_1,\dots,U_g)$ is a \ktree, then $s$ (the root) is the real state of the system, and each $U_i$ represents the knowledge of agent $i$. This $U_i$ (the set of $i$-children) is itself a set of $(k-1)$-trees including the knowledge of other agents.
+
+\subsubsection{Updating \ktrees}
+Similarly to $\UD$ and $\UT$, we define inductively $\UDK{k}$ and $\UTK{k}$ to update \ktrees.
+
+$\UTK{k}:\mathcal{T}_k\times S\times \mathcal{O}^{g}\rightarrow \mathcal{T}_k$
+
+\begin{center}
+$\UTK{0}(t,s,o_1,\dots,o_g) = (s,\emptyset,\dots,\emptyset)$\\
+$\UTK{k+1}((s_t,U_{t,1},\dots,U_{t,g}),s,o_1,\dots,o_g)=(s,U_1,\dots,U_g)$\\
+$\text{Where }U_i=\{\UTK{k}(t,s',o_1,\dots,o_g)~|~t\in U_{t,i},\quad s'\eqstate{o_i} s,\quad \mathit{root}(t)\ T\ s'\}$
+\end{center}
+
+$\UDK{k}:\mathcal{T}_k\times \mathcal{O}^{g}\rightarrow \mathcal{T}_k$
+
+\begin{center}
+$\UDK{0}(t,o_1,\dots,o_g)=t$\\
+$\UDK{k+1}((s_t,U_{t,1},\dots,U_{t,g}),o_1,\dots,o_g)=(s_t,U_1,\dots,U_g)$\\
+$\text{Where }U_i=\{\UDK{k}(t,o_1,\dots,o_g)~|~t\in U_{t,i},\quad\mathit{root}(t)\eqstate{o_i} s_t\}$
+\end{center}
+
+Intuitively, when moving to a new state $s$, each agent $i$ has to update his knowledge ($U_i$). The next possible trees will be the update of every tree he considered possible with a state that is equivalent to the new one using the current observation ($o_i$).
+When changing observation, we simply remove the trees that are no longer equivalent to the actual state.
+
+\subsubsection{\ktrees\ Semantics}
+
+Let $t=(s,U_1,\dots,U_g)$. We show here the differences with the Information Set semantics:\\
+\begin{tabular}{l c l}
+  $M,t,o_1,\dots,o_g\models p $&$ \iff $&$ p\in V(\mathit{root}(t))$\\
+  $M,t,o_1,\dots,o_g\models\A\psi $&$ \iff $&$ \forall\pi$ such that $\pi_0=\mathit{root}(t)$,\\
+  & & we have $M,\pi,t,o_1,\dots,o_g\models\psi$\\
+  $M,t,o_1,\dots,o_g\models\K_i\varphi $&$ \iff $&$ \forall t'\in U_i$, we have $M,t',o_1,\dots,o_g\models\varphi$\\
+  $M,t,o_1,\dots,o_g'\models\D{o'}_i\varphi $&$ \iff $&$ M,\UD(t,o_1,\dots,o',\dots,o_g),o_1,\dots,o',\dots,o_g\models\varphi$\\
+  $M,\pi,t,o_1,\dots,o_g\models\varphi $&$ \iff $&$ M,t,o_1,\dots,o_g\models\varphi$\\
+  $M,\pi,t,o_1,\dots,o_g\models\X\psi $&$ \iff $&$ M,\pi_{1\dots},\UT(t,\pi_1,o_1,\dots,o_g),o_1,\dots,o_g\models\psi$\\
+  $M,\pi,t,o_1,\dots,o_g\models\psi_1\U\psi_2 $&$ \iff $&$ \exists n\geq 0$, $\forall m\leq n,$\\
+  & & $M,\pi_{m\dots},\UT^m(t,\pi,o_1,\dots,o_g),o_1,\dots,o_g\models\psi_1$\\
+  & & and $M,\pi_{n\dots},\UT^n(t,\pi,o_1,\dots,o_g),o_1,\dots,o_g\models\psi_2$
+\end{tabular}
+
+An adaptation of the reduction theorem can be found in Section~\ref{subsec:reduc}. The modified model-checking algorithm can be found in Section~\ref{subsec:mc}. Now that we successfully defined the data structure that holds the epistemic information and how to update it, the way to model-checking is similar to the single-agent setting, with \ktrees\ instead of information sets.

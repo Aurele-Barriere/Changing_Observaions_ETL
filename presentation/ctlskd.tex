@@ -1,0 +1,117 @@
+\begin{frame}{\ctlskd\quad Syntax}
+
+  \begin{block}{Syntax}
+    \begin{tabular}{r l}
+    History Formula: & $\varphi := p ~|~ \neg \varphi ~|~ \varphi\wedge\varphi ~|~ \A\psi ~|~$\color{red!85!blue}$ \K\varphi ~|~ \D{o}\varphi$\\
+    Path Formula: & $\psi := \varphi ~|~ \neg\psi ~|~ \psi\wedge\psi ~|~ \X\psi ~|~ \psi\U\psi$
+    \end{tabular}
+  \end{block}
+  \vfill
+  \begin{block}{Definitions}
+    History: finite sequence of states.\\
+    Path: infinite sequence of states.
+  \end{block}
+  
+\end{frame}
+
+
+\begin{frame}{\ctlskd\quad Models}
+
+  \begin{block}{Kripke Structures with Observations}
+    $AP$ atomic propositions.
+    $\mathcal{O}$ set of $m$ observations.
+
+    $M=(S,I_s,o_I,T,V,\eqstate{o_1},\dots,\eqstate{o_m})$ where:
+
+    \begin{tabular}{r l}
+      $S$& set of states.\\
+      $I_s\subseteq S$& set of initial states.\\
+      \color{red!85!blue}$o_I$& initial observation.\\
+      $T\subseteq S\times S$& transition relation.\\
+      $V:S\rightarrow 2^{\mathit{AP}}$& valuation function.\\
+      \color{red!85!blue}$\forall o_i, \eqstate{o_i}$& equivalence relations between states (observation).
+    \end{tabular}
+  \end{block}
+  
+\end{frame}
+
+
+\begin{frame}{Defining \ctlskd\ Semantics}
+
+  \begin{block}{Observation records}
+    To get possible histories, we need to remember the previous states and corresponding observations.\\
+    $r=[(o_1,0),(o_2,3),(o_3,3)]$.
+    Agent had observations
+    \begin{tabular}{l l}
+      $o_I$ and $o_1$ & at time 0\\
+      $o_1$ & at time 1 and 2\\
+      $o_1,o_2$ and $o_3$ & at time 3\\
+      $o_3$ & at time 4 and more.
+    \end{tabular}
+  \end{block}
+  \vfill
+  \begin{block}{Equivalent histories}
+    $h\eqh{r}h'\quad\iff\quad \forall i< |h|, \forall o$ observation at time $i$ according to $r$, $h(i)\eqstate{o} h'(i)~\textit{and}~|h|=|h'|.$
+  \end{block}
+  
+\end{frame}
+
+
+\begin{frame}{\ctlskd\quad Semantics}
+  \footnotesize
+  \begin{block}{Semantics}
+    \begin{tabular}{l c l}
+      $M,h,r \models p $&$ \iff $&$ p\in V(\mathit{last}(h))$\\
+      $M,h,r \models \neg\varphi $&$ \iff $&$ M,h,r\not\models\varphi$\\
+      $M,h,r \models \varphi_1\wedge\varphi_2 $&$ \iff $&$ (M,h,r\models\varphi_1~\text{and}~ M,h,r\models\varphi_2)$\\
+      $M,h,r \models \A\psi  $&$ \iff $&$ \forall\pi$ that extends $h$, we have $M,\pi,|h|-1,r\models\psi$\\
+      \color{red!85!blue}$M,h,r \models\K\varphi  $&$ \iff $&\color{red!85!blue}$ \forall h'$ such that $h'\eqh{r}h$, we have $M,h',r\models\varphi$\\
+      \color{red!85!blue}$M,h,r \models \D{o}\varphi $&$ \iff $&\color{red!85!blue}$ M,h,r[(o,|h|-1)]\models\varphi$\\
+      $M,\pi,n,r\models\varphi $&$ \iff $&$ M,(\pi_0\dots\pi_n),r\models\varphi$\\
+      $M,\pi,n,r\models\neg\psi $&$ \iff $&$ M,\pi,n,r\not\models\psi$\\
+      $M,\pi,n,r\models \psi_1\wedge\psi_2 $&$ \iff $&$ (M,\pi,r,n\models\psi_1~\text{and}~ M,\pi,r,n\models\psi_2)$\\
+      $M,\pi,n,r\models\X\psi $&$ \iff $&$  M,\pi,(n+1),r\models\psi$\\
+      $M,\pi,n,r\models \psi_1\U\psi_2 $&$ \iff $&$ \exists m\geq n$ such that $\forall k\in[n,m[, M,\pi,k,r\models\psi_1$\\
+          & & and $M,\pi,m,r\models\psi_2$
+    \end{tabular}
+  \end{block}
+\end{frame}
+
+\begin{frame}{A few validities of \ctlskd}
+
+  \begin{block}{Truth}
+    $\K\varphi\quad\rightarrow\quad\varphi$
+  \end{block}
+  \vfill
+  \begin{block}{Distributivity}
+    $\D{o}(\varphi_1\wedge\varphi_2)\quad\leftrightarrow\quad(\D{o}\varphi_1\wedge\D{o}\varphi_2)$
+  \end{block}
+  \vfill
+  \begin{block}{Self-Duality}
+    $\D{o}\neg\varphi\quad\leftrightarrow\quad\neg\D{o}\varphi$
+  \end{block}
+  \vfill
+  \begin{block}{Redundant change of observation}
+    $\D{o}\A\X\D{o}\K\varphi\quad\leftrightarrow\quad\D{o}\A\X\K\varphi$
+  \end{block}
+\end{frame}
+
+
+\begin{frame}{Model Checking \ctlskd}
+
+  \begin{block}{Marking Algorithm}
+    Inductively mark the states of the model where each subformula holds.
+  \end{block}
+  \vfill
+  \begin{alertblock}{The current semantics can't be model-checked this way}
+  \end{alertblock}
+  \vfill
+  \begin{exampleblock}{Define Alternative Semantics}
+    \begin{itemize}
+    \item Extract information from histories and records.
+    \item Model-Check the new Semantics.
+    \item Prove that the two semantics are equivalent.
+    \end{itemize}
+  \end{exampleblock}
+  
+\end{frame}

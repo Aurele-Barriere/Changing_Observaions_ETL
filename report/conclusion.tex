@@ -1,0 +1,7 @@
+We successfully defined a logic to capture the dynamic changes of observation. We introduced an alternative semantics that we proved to be equivalent and is easier to model-check. This logic can be model-checked using a marking algorithm. We have shown that it can be extended to multi-agent settings with nested knowledge operators using the \ktree\ structure defined in~\cite{DBLP:conf/fsttcs/MeydenS99}.
+
+We believe that our work could be insightful for future works on Strategy Logic with Imperfect Information~\cite{DBLP:conf/lics/BerthonMMRV17}\cite{epistemicSL}, and provide elements for model-checking epistemic extensions.
+
+Another possible future work could be extending \ctlskd. Allowing $\D{o}\psi$ to be a path formula instead of a history formula would define a logic that we suspect to be more expressive than \ctlskd.
+We haven't solved the model-checking problem for this extension yet. The marking algorithm cannot be applied anymore because $\D{o}\psi$ cannot be marked on the states of the augmented model, as it also requires a run to be interpreted.
+ We believe that we could define a \textit{focus game}, as defined in~\cite{DBLP:journals/logcom/LangeS02}. These games are defined such that there exists a winning strategy for some player if and only if a model satisfy a given formula. This work has yet to be done.
